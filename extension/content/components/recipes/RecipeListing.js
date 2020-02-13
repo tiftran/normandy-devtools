@@ -3,7 +3,7 @@ import yaml from "js-yaml";
 import PropTypes from "prop-types";
 import React from "react";
 import Highlight from "react-highlight";
-import { Button, Icon, Panel, Tag } from "rsuite";
+import { Button, Icon, Panel, Tag, Modal } from "rsuite";
 import { convertToV1Recipe } from "devtools/utils/recipes";
 
 const normandy = browser.experiments.normandy;
@@ -21,6 +21,7 @@ class RecipeListing extends React.PureComponent {
     this.state = {
       filterMatches: null,
       running: false,
+      recipeShowing: false,
     };
   }
 
@@ -104,6 +105,39 @@ class RecipeListing extends React.PureComponent {
     );
   }
 
+  showRecipeModal() {
+    this.setState({ recipeShowing: true });
+  }
+
+  hideRecipeModal() {
+    this.setState({ recipeShowing: false });
+  }
+
+  renderModal() {
+    const { recipe } = this.props;
+    return (
+      <Modal
+        show={this.state.recipeShowing}
+        onHide={this.hideRecipeModal}
+        size="lg"
+      >
+        <Modal.Header>
+          <Modal.Title>{recipe.approved_revision.name}</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          <Highlight language="json">
+            {JSON.stringify(recipe, null, 1)}
+          </Highlight>
+        </Modal.Body>
+      </Modal>
+    );
+  }
+
+  renderViewRecipeButton() {
+    return <Button onClick={this.showRecipeModal}>View Recipe</Button>;
+  }
+
   render() {
     const { recipe } = this.props;
 
@@ -112,24 +146,28 @@ class RecipeListing extends React.PureComponent {
     } = recipe;
 
     return (
-      <Panel
-        className="recipe-listing"
-        header={this.renderHeader()}
-        collapsible
-        bordered
-      >
-        <h4>Filter</h4>
-        <Highlight className="javascript">{filter_expression}</Highlight>
+      <React.Fragment>
+        <Panel
+          className="recipe-listing"
+          header={this.renderHeader()}
+          collapsible
+          bordered
+        >
+          {this.renderViewRecipeButton()}
+          <h4>Filter</h4>
+          <Highlight className="javascript">{filter_expression}</Highlight>
 
-        <h4>Arguments</h4>
-        <Highlight className="yaml">
-          {yaml.safeDump(arguments_, {
-            sortKeys: true,
-            indent: 4,
-            noRefs: true,
-          })}
-        </Highlight>
-      </Panel>
+          <h4>Arguments</h4>
+          <Highlight className="yaml">
+            {yaml.safeDump(arguments_, {
+              sortKeys: true,
+              indent: 4,
+              noRefs: true,
+            })}
+          </Highlight>
+        </Panel>
+        {this.renderModal()}
+      </React.Fragment>
     );
   }
 }
