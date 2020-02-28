@@ -22,7 +22,7 @@ describe("The `Recipe Page` component", () => {
 
     const response = { experiments: { normandy: "" } };
     //jest.spyOn(RecipeListing, "browser", "get").mockImplementation(() => Promise.resolve(response));
-    jest.spyOn(RecipeListing, "browser", "get").mockImplementation(() => jest.fn());
+    //jest.spyOn(RecipeListing, "browser", "get").mockImplementation(() => jest.fn());
     const { getByText } = await render(<RecipesPage />);
     expect(getByText("Write & Run Arbitrary")).toBeInTheDocument();
 
