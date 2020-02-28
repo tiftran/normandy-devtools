@@ -5,6 +5,17 @@
   "homepage_url": "https://github.com/mozilla/normandy-devtools",
   "private": true,
   "license": "MPLv2",
+  "jest": {
+    "globals": {
+      "browser": {"experiments": {}}
+    },
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "^devtools/(.*)$": "<rootDir>/extension/content/$1"
+    }
+  },
   "scripts": {
     "build": "npm-run-all clean build:webpack build:extension",
     "build:extension": "web-ext build -s dist --overwrite-dest",
@@ -15,8 +26,9 @@
     "lint-fix": "npm-run-all lint:eslint-fix",
     "lint:eslint": "eslint webpack.config.js extension",
     "lint:eslint-fix": "yarn run lint:eslint --fix",
+    "test": "jest",
     "watch": "npm-run-all build:webpack-dev --parallel --race watch:*",
-    "watch:extension": "web-ext run -s dist",
+    "watch:extension": "web-ext run -s dist  --firefox=\"/Applications/Firefox Nightly.app/Contents/MacOS/firefox-bin\"",
     "watch:webpack": "webpack --progress --mode development --watch"
   },
   "devDependencies": {
@@ -25,8 +37,12 @@
     "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/plugin-proposal-decorators": "^7.4.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
-    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-env": "7.8.4",
+    "@babel/preset-react": "7.8.3",
+    "@testing-library/jest-dom": "5.1.1",
+    "@testing-library/react": "9.4.0",
     "babel-eslint": "^10.0.1",
+    "babel-jest": "25.1.0",
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^5.0.3",
     "css-loader": "^2.1.1",
@@ -40,6 +56,7 @@
     "file-loader": "^4.0.0",
     "generate-json-webpack-plugin": "^0.3.1",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "25.1.0",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
     "npm-run-all": "^4.1.3",
