@@ -32,7 +32,7 @@
     "lint:eslint-fix": "yarn run lint:eslint --fix",
     "test": "jest",
     "watch": "npm-run-all build:webpack-dev --parallel --race watch:*",
-    "watch:extension": "web-ext run -s dist",
+    "watch:extension": "web-ext run -s dist --firefox=\"/Applications/Firefox Nightly.app/Contents/MacOS/firefox-bin\"",
     "watch:webpack": "webpack --progress --mode development --watch"
   },
   "devDependencies": {
@@ -58,6 +58,7 @@
     "eslint-plugin-prettier": "3.1.1",
     "eslint-plugin-react": "7.17.0",
     "extract-text-webpack-plugin": "3.0.2",
+    "faker": "4.1.0",
     "file-loader": "5.0.2",
     "generate-json-webpack-plugin": "0.3.1",
     "html-webpack-plugin": "3.2.0",

@@ -69,6 +69,8 @@ class RecipesPage extends React.PureComponent {
       ordering: "-id",
     });
 
+    console.log(data);
+
     this.setState(({ recipePages }) => ({
       recipePages: {
         ...recipePages,
