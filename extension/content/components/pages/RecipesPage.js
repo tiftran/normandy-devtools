@@ -1,6 +1,8 @@
 import autobind from "autobind-decorator";
 import PropTypes from "prop-types";
 import React from "react";
+import { Link, Route, Switch } from "react-router-dom";
+
 import { Controlled as CodeMirror } from "react-codemirror2";
 import Highlight from "devtools/components/common/Highlight";
 import {
@@ -15,6 +17,7 @@ import {
 } from "rsuite";
 
 import RecipeListing from "devtools/components/recipes/RecipeListing";
+import RecipeEditor from "devtools/components/recipes/RecipeEditor";
 import api from "devtools/utils/api";
 import environmentStore from "devtools/utils/environmentStore";
 import { convertToV1Recipe } from "devtools/utils/recipes";
@@ -111,7 +114,7 @@ class RecipesPage extends React.PureComponent {
 
   renderRecipeList() {
     const { loading, page, recipePages } = this.state;
-    const { environment } = this.props;
+    const { environment, match } = this.props;
     const recipes = recipePages[environment.key][page];
 
     if (loading) {
@@ -128,11 +131,40 @@ class RecipesPage extends React.PureComponent {
           environmentName={environment.key}
           copyRecipeToArbitrary={this.copyRecipeToArbitrary}
           showRecipe={this.showRecipe}
+          match={match}
         />
       ));
     }
 
     return null;
+  }
+
+  renderRecipeListPage() {
+    const { count, page } = this.state;
+    return (
+      <React.Fragment>
+        {this.renderRecipeList()}
+        <div>
+          <Pagination
+            activePage={page}
+            maxButtons={5}
+            pages={Math.ceil(count / 25)}
+            onSelect={this.handlePageChange}
+            size="lg"
+            prev
+            next
+            first
+            last
+            ellipsis
+            boundaryLinks
+          />
+        </div>
+      </React.Fragment>
+    );
+  }
+
+  renderRecipeEditor() {
+    return <RecipeEditor />;
   }
 
   showWriteRecipePopup() {
@@ -246,13 +278,22 @@ class RecipesPage extends React.PureComponent {
   }
 
   render() {
-    const { count, page } = this.state;
+    const { match } = this.props;
 
     return (
       <React.Fragment>
         <Header>
           <Navbar>
             <Nav pullRight>
+              <Link
+                to={{
+                  pathname: `${match.path}/new`,
+                  state: { hello: "hello" },
+                }}
+              >
+                <Nav.Item icon={<Icon icon="edit" />}>Create Recipe</Nav.Item>
+              </Link>
+
               <Nav.Item
                 icon={<Icon icon="edit" />}
                 onClick={this.showWriteRecipePopup}
@@ -265,22 +306,17 @@ class RecipesPage extends React.PureComponent {
         </Header>
 
         <div className="page-wrapper">
-          {this.renderRecipeList()}
-          <div>
-            <Pagination
-              activePage={page}
-              maxButtons={5}
-              pages={Math.ceil(count / 25)}
-              onSelect={this.handlePageChange}
-              size="lg"
-              prev
-              next
-              first
-              last
-              ellipsis
-              boundaryLinks
+          <Switch>
+            <Route
+              path={`${match.path}/new`}
+              render={() => this.renderRecipeEditor()}
             />
-          </div>
+            <Route
+              path={`${match.path}/edit`}
+              render={() => this.renderRecipeEditor()}
+            />
+            <Route render={() => this.renderRecipeListPage()} />
+          </Switch>
         </div>
 
         {this.renderWriteRecipeModal()}

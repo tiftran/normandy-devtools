@@ -24,6 +24,8 @@ export async function fetchRecipePage(environment, page = 1, qs = {}) {
   return res.json();
 }
 
+export async function fetchNormandyActions(environment, method, qs) {}
+
 export default {
   fetchRecipes,
   fetchRecipePage,
