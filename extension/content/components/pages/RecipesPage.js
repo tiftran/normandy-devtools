@@ -1,6 +1,8 @@
 import autobind from "autobind-decorator";
 import PropTypes from "prop-types";
 import React from "react";
+import { Link, Route, Switch } from "react-router-dom";
+
 import { Controlled as CodeMirror } from "react-codemirror2";
 import Highlight from "devtools/components/common/Highlight";
 import {
@@ -15,12 +17,18 @@ import {
 } from "rsuite";
 
 import RecipeListing from "devtools/components/recipes/RecipeListing";
+<<<<<<< HEAD
 import {
   useEnvironments,
   useEnvironmentState,
   useSelectedEnvironment,
   useSelectedEnvironmentAPI,
 } from "devtools/contexts/environment";
+=======
+import RecipeEditor from "devtools/components/recipes/RecipeEditor";
+import api from "devtools/utils/api";
+import environmentStore from "devtools/utils/environmentStore";
+>>>>>>> added recipe editor page
 import { convertToV1Recipe } from "devtools/utils/recipes";
 
 const normandy = browser.experiments.normandy;
@@ -30,8 +38,12 @@ class RecipesPage extends React.PureComponent {
   static propTypes = {
     api: PropTypes.object,
     environment: PropTypes.object,
+<<<<<<< HEAD
     environmentKey: PropTypes.string,
     environments: PropTypes.object,
+=======
+    match: PropTypes.object,
+>>>>>>> added recipe editor page
   };
 
   constructor(props) {
@@ -119,8 +131,13 @@ class RecipesPage extends React.PureComponent {
 
   renderRecipeList() {
     const { loading, page, recipePages } = this.state;
+<<<<<<< HEAD
     const { environmentKey } = this.props;
     const { [environmentKey]: { [page]: recipes = [] } = {} } = recipePages;
+=======
+    const { environment, match } = this.props;
+    const recipes = recipePages[environment.key][page];
+>>>>>>> added recipe editor page
 
     if (loading) {
       return (
@@ -136,11 +153,41 @@ class RecipesPage extends React.PureComponent {
           environmentName={environmentKey}
           copyRecipeToArbitrary={this.copyRecipeToArbitrary}
           showRecipe={this.showRecipe}
+          match={match}
         />
       ));
     }
 
     return null;
+  }
+
+  renderRecipeListPage() {
+    const { count, page } = this.state;
+    return (
+      <React.Fragment>
+        {this.renderRecipeList()}
+        <div>
+          <Pagination
+            activePage={page}
+            maxButtons={5}
+            pages={Math.ceil(count / 25)}
+            onSelect={this.handlePageChange}
+            size="lg"
+            prev
+            next
+            first
+            last
+            ellipsis
+            boundaryLinks
+          />
+        </div>
+      </React.Fragment>
+    );
+  }
+
+  renderRecipeEditor() {
+    const { environment } = this.props;
+    return <RecipeEditor environmentName={environment} />;
   }
 
   showWriteRecipePopup() {
@@ -254,13 +301,19 @@ class RecipesPage extends React.PureComponent {
   }
 
   render() {
-    const { count, page } = this.state;
-
+    const { environment, match } = this.props;
     return (
       <React.Fragment>
         <Header>
           <Navbar>
             <Nav pullRight>
+              <Nav.Item
+                componentClass={Link}
+                to={`${match.path}/new`}
+                icon={<Icon icon="edit" />}
+              >
+                Create Recipe
+              </Nav.Item>
               <Nav.Item
                 icon={<Icon icon="edit" />}
                 onClick={this.showWriteRecipePopup}
@@ -273,22 +326,21 @@ class RecipesPage extends React.PureComponent {
         </Header>
 
         <div className="page-wrapper">
-          {this.renderRecipeList()}
-          <div>
-            <Pagination
-              activePage={page}
-              maxButtons={5}
-              pages={Math.ceil(count / 25)}
-              onSelect={this.handlePageChange}
-              size="lg"
-              prev
-              next
-              first
-              last
-              ellipsis
-              boundaryLinks
+          <Switch>
+            <Route
+              path={`${match.path}/new`}
+              render={props => (
+                <RecipeEditor environment={environment} {...props} />
+              )}
             />
-          </div>
+            <Route
+              path={`${match.path}/edit/:id`}
+              render={props => (
+                <RecipeEditor environment={environment} {...props} />
+              )}
+            />
+            <Route render={() => this.renderRecipeListPage()} />
+          </Switch>
         </div>
 
         {this.renderWriteRecipeModal()}
