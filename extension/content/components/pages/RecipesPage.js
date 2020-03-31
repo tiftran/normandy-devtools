@@ -17,18 +17,13 @@ import {
 } from "rsuite";
 
 import RecipeListing from "devtools/components/recipes/RecipeListing";
-<<<<<<< HEAD
 import {
   useEnvironments,
   useEnvironmentState,
   useSelectedEnvironment,
   useSelectedEnvironmentAPI,
 } from "devtools/contexts/environment";
-=======
 import RecipeEditor from "devtools/components/recipes/RecipeEditor";
-import api from "devtools/utils/api";
-import environmentStore from "devtools/utils/environmentStore";
->>>>>>> added recipe editor page
 import { convertToV1Recipe } from "devtools/utils/recipes";
 
 const normandy = browser.experiments.normandy;
@@ -38,12 +33,9 @@ class RecipesPage extends React.PureComponent {
   static propTypes = {
     api: PropTypes.object,
     environment: PropTypes.object,
-<<<<<<< HEAD
     environmentKey: PropTypes.string,
     environments: PropTypes.object,
-=======
     match: PropTypes.object,
->>>>>>> added recipe editor page
   };
 
   constructor(props) {
@@ -131,13 +123,8 @@ class RecipesPage extends React.PureComponent {
 
   renderRecipeList() {
     const { loading, page, recipePages } = this.state;
-<<<<<<< HEAD
-    const { environmentKey } = this.props;
+    const { environmentKey, match } = this.props;
     const { [environmentKey]: { [page]: recipes = [] } = {} } = recipePages;
-=======
-    const { environment, match } = this.props;
-    const recipes = recipePages[environment.key][page];
->>>>>>> added recipe editor page
 
     if (loading) {
       return (
