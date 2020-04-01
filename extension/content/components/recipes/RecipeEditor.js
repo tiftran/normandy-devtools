@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   Alert,
@@ -10,7 +10,6 @@ import {
   ControlLabel,
   HelpBlock,
   InputPicker,
-  Loader,
 } from "rsuite";
 import { Controlled as CodeMirror } from "react-codemirror2";
 import {
@@ -30,11 +29,11 @@ export default function RecipeEditor(props) {
 
   async function getActionsOptions(environment) {
     let res = await api.fetchActions(3);
-    let actionsLabels = res.results.map(action => ({
+    let actions = res.results.map(action => ({
       label: action.name,
       value: action.id,
     }));
-    setActions(actionsLabels);
+    setActions(actions);
   }
 
   async function getRecipe(id) {
@@ -50,7 +49,7 @@ export default function RecipeEditor(props) {
     setData(latest_revision);
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     getActionsOptions(environment);
     if (match.params.id) {
       getRecipe(match.params.id);
@@ -131,6 +130,8 @@ export default function RecipeEditor(props) {
             onBeforeChange={(editor, data, value) =>
               handleChange("extra_filter_expression", value)
             }
+            data-testid="filter_expression"
+
           />
         </FormGroup>
         <FormGroup>
@@ -143,6 +144,7 @@ export default function RecipeEditor(props) {
             size="lg"
             block
             accepter={InputPicker}
+            data-testid="actions"
           />
         </FormGroup>
         <ActionArgument

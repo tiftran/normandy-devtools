@@ -15,6 +15,7 @@ global.document.body.createTextRange = () => {
     setEnd: () => {},
     setStart: () => {},
     getBoundingClientRect: () => {},
-    getClientRects: () => {},
+    getClientRects: () => [],
   };
 };
+//Element.prototype.getClientRect = ()=>{return [0,0,0,0]};

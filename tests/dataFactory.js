@@ -5,7 +5,7 @@ export class ConsoleLogRecipeFactory extends Factory {
   getFields() {
     return {
       latest_revision: {
-        name: faker.lorem.words(),
+        name: new Field(faker.lorem.words),
         action: { id: 4 },
         arguments: {
           message: faker.lorem.words(),
@@ -15,6 +15,7 @@ export class ConsoleLogRecipeFactory extends Factory {
     };
   }
 }
+
 export const ActionsResponse = () => {
   const actionNames = [
     "show-heartbeat",

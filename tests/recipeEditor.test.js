@@ -9,42 +9,23 @@ import "@testing-library/jest-dom/extend-expect";
 import RecipeEditor from "devtools/components/recipes/RecipeEditor";
 import * as Environment from "devtools/contexts/environment";
 import NormandyAPI from "devtools/utils/api";
-import {
-  FormControl,
-} from "rsuite";
 import { ActionsResponse, ActionFactory, ConsoleLogRecipeFactory } from "./dataFactory";
 
 describe("`recipeEditor`", () => {
   it("should allow fields to be edited and saved", async () => {
-    const mockActions = ActionFactory.build();
+    const mockActions = ActionsResponse();
 
     const fetchActionsSpy = jest
       .spyOn(NormandyAPI.prototype, "fetchActions")
       .mockReturnValue(mockActions);
 
-    const codeMirror = require("react-codemirror2");
-   /* jest
-      .spyOn(codeMirror, "Controlled")
-      .mockReturnValueOnce(props => (
-        <input
-          name="extra_filter_expression"
-          data-testid="extraFilterExpression"
-          value=""
-          {...props}
-        />
-      ))
-      .mockReturnValueOnce(
-        <input name="arguments" data-testid="arguments" value="" />,
-      );
-
-    */
     jest
       .spyOn(Environment, "useSelectedEnvironmentAPI")
       .mockReturnValue(new NormandyAPI());
     jest
       .spyOn(Environment, "useSelectedEnvironmentAuth")
       .mockImplementation(jest.fn());
-    const { getByTestId, getByText, getByRole } = render(
+    const { getByTestId, getByText, container } = render(
       <RecipeEditor match={{ params: {} }} />,
     );
     expect(fetchActionsSpy).toHaveBeenCalled();
@@ -61,14 +42,17 @@ describe("`recipeEditor`", () => {
     fireEvent.change(getByTestId("experimentSlug"), {
       target: { value: experimentSlug },
     });
-   // fireEvent.change(getByTestId("extraFilterExpression"), {
-   //   target: { value: extraFilterExpression },
-   // });
-    fireEvent.click(getByRole("combobox"));
+
+    fireEvent.change(getByTestId("filter_expression"), {
+      target: { value: extraFilterExpression },
+    });
+    fireEvent.click(getByTestId("actions"));
     fireEvent.click(getByText("console-log"));
   });
+
+
   it("should display recipe info from Normandy", async () => {
-    const recipeData = ConsoleLogRecipeFactory.build({}, {});
+    const recipeData = ConsoleLogRecipeFactory.build();
     const mockActions = ActionsResponse();
 
     const fetchActionsSpy = jest
@@ -77,19 +61,7 @@ describe("`recipeEditor`", () => {
 
     const fetchRecipeSpy = jest.spyOn(NormandyAPI.prototype, "fetchRecipe").mockReturnValue(recipeData);
     const codeMirror = require("react-codemirror2");
-     /*jest
-       .spyOn(codeMirror, "Controlled")
-       .mockReturnValueOnce(props => (
-         <FormControl
-           name="extra_filter_expression"
-           data-testid="extraFilterExpression"
-         />
-       ))
-       .mockReturnValueOnce(
-         <FormControl name="arguments" data-testid="arguments" />,
-       );
 
-*/
     jest
       .spyOn(Environment, "useSelectedEnvironmentAPI")
       .mockReturnValue(new NormandyAPI());
@@ -101,5 +73,7 @@ describe("`recipeEditor`", () => {
     );
     expect(fetchActionsSpy).toHaveBeenCalled();
     expect(fetchRecipeSpy).toHaveBeenCalled();
+    expect(getByText(recipeData.latest_revision.name)).toBeInTheDocument();
+    expect(getByText(recipeData.latest_revision.extra_filter_expression)).toBeInTheDocument();
 
 });});
