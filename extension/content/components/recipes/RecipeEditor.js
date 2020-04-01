@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
 import {
   Alert,
@@ -10,6 +10,7 @@ import {
   ControlLabel,
   HelpBlock,
   InputPicker,
+  Loader,
 } from "rsuite";
 import { Controlled as CodeMirror } from "react-codemirror2";
 import {
@@ -20,18 +21,20 @@ import {
   useSelectedEnvironmentAuth,
 } from "devtools/contexts/environment";
 
-function RecipeEditor(props) {
-  const { match, environment, api, auth } = props;
+export default function RecipeEditor(props) {
+  const { match, environment } = props;
+  const api = useSelectedEnvironmentAPI();
+  const auth = useSelectedEnvironmentAuth();
   let [data, setData] = useState({});
   let [actions, setActions] = useState([]);
 
   async function getActionsOptions(environment) {
     let res = await api.fetchActions(3);
-    actions = res.results.map(action => ({
+    let actionsLabels = res.results.map(action => ({
       label: action.name,
       value: action.id,
     }));
-    setActions(actions);
+    setActions(actionsLabels);
   }
 
   async function getRecipe(id) {
@@ -47,7 +50,7 @@ function RecipeEditor(props) {
     setData(latest_revision);
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getActionsOptions(environment);
     if (match.params.id) {
       getRecipe(match.params.id);
@@ -102,17 +105,18 @@ function RecipeEditor(props) {
       <Form fluid formValue={data} onChange={data => setData(data)}>
         <FormGroup>
           <ControlLabel>Name</ControlLabel>
-          <FormControl name="name" />
+          <FormControl name="name" data-testid="recipeName" />
           <HelpBlock>Required</HelpBlock>
         </FormGroup>
         <FormGroup>
           <ControlLabel>Experiment Slug</ControlLabel>
-          <FormControl name="experimenter_slug" />
+          <FormControl name="experimenter_slug" data-testid="experimentSlug" />
         </FormGroup>
         <FormGroup>
           <ControlLabel>Extra Filter Expression</ControlLabel>
           <CodeMirror
             name="extra_filter_expression"
+            htmlFor="extraFilterExpression"
             options={{
               mode: "javascript",
               theme: "neo",
@@ -133,7 +137,7 @@ function RecipeEditor(props) {
           <ControlLabel>Actions</ControlLabel>
           <FormControl
             name={"action_id"}
-            placeholder={"Actions"}
+            placeholder={"Select an action"}
             data={actions}
             searchable={false}
             size="lg"
@@ -192,8 +196,8 @@ RecipeEditor.propTypes = {
   match: PropTypes.object,
   environment: PropTypes.object,
 };
-
-export default function WrappedRecipePage(props) {
+/*
+export default function WrappedRecipeEditor(props) {
   const { selectedKey } = useEnvironmentState();
   const environment = useSelectedEnvironment();
   const environments = useEnvironments();
@@ -203,10 +207,11 @@ export default function WrappedRecipePage(props) {
     <RecipeEditor
       {...props}
       environmentKey={selectedKey}
-      environment={environment}
+      environment={environment}¬
       environments={environments}
       auth={auth}
       api={api}
     />
   );
 }
+*/
