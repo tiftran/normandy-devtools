@@ -10,6 +10,7 @@ import OptOutStudy from "devtools/components/recipes/form/arguments/OptOutStudy"
 import PreferenceRollout from "devtools/components/recipes/form/arguments/PreferenceRollout";
 import PreferenceRollback from "devtools/components/recipes/form/arguments/PreferenceRollback";
 import ShowHeartBeat from "devtools/components/recipes/form/arguments/ShowHeartBeat";
+import { FormGroup, ControlLabel, Panel } from "rsuite";
 
 const ARGUMENTS_FIELDS_MAPPING = {
   "branched-addon-study": BranchedAddon,
@@ -75,7 +76,14 @@ export default function ActionArguments() {
   if (data.action && data.action.name) {
     if (data.action.name in ARGUMENTS_FIELDS_MAPPING) {
       const ArgumentsFields = ARGUMENTS_FIELDS_MAPPING[data.action.name];
-      return <ArgumentsFields />;
+      return (
+        <FormGroup>
+          <ControlLabel> Action Arguments</ControlLabel>
+          <Panel bordered>
+            <ArgumentsFields />
+          </Panel>
+        </FormGroup>
+      );
     }
 
     return <FallbackEditor />;
