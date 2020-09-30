@@ -17,6 +17,7 @@ import PrefStudiesPage from "devtools/components/pages/PrefStudiesPage";
 import RecipeDetailsPage from "devtools/components/pages/RecipeDetailsPage";
 import RecipeFormPage from "devtools/components/pages/RecipeFormPage";
 import RecipesPage from "devtools/components/pages/RecipesPage";
+import { OverviewPage } from "devtools/components/pages/OverviewPage";
 import { EnvironmentProvider } from "devtools/contexts/environment";
 import { useHistoryRecorder } from "devtools/hooks/urls";
 
@@ -80,6 +81,11 @@ function Page() {
             path={`${match.path}/recipes/import/:experimenterSlug`}
           />
           <Route exact component={FiltersPage} path={`${match.path}/filters`} />
+          <Route
+            exact
+            component={OverviewPage}
+            path={`${match.path}/overview`}
+          />
           <Route
             component={PrefStudiesPage}
             path={`${match.path}/pref-studies`}
